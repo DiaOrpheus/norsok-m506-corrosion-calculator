@@ -2,4 +2,3 @@ __pycache__/
 *.pyc
 .env
 .streamlit/secrets.toml
-Logo_01.png
