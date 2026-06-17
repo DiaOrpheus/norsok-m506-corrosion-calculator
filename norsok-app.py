@@ -40,7 +40,7 @@ with col1:
     """, unsafe_allow_html=True)
 
 with col2:
-    st.image("logo_01.png", width=150)
+    st.image("Logo_01.png", width=150)
 
 st.markdown("""
 <div style="
