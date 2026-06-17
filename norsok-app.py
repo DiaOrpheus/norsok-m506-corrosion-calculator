@@ -3,13 +3,82 @@ import norsokm506_main as ns
 
 st.set_page_config(
     page_title="NORSOK M-506",
-    layout="wide"
+    layout="wide",
 )
-st.title("NORSOK M-506 CO₂ Corrosion Calculator")
 
-st.write("Source: https://github.com/dungnguyen2/norsokm506")
-st.write("Developed by Ari SN & Gendro Wisnu (D&P TEC - PHE)")
-st.write("Last Update: 2026-06")
+st.markdown("""
+<style>
+.header-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.header-title {
+    font-size: 70px;
+    font-weight: 700;
+    color: #2D3142;
+    margin: 0;
+}
+
+.header-logo {
+    max-height: 180px;
+}
+</style>
+""", unsafe_allow_html=True)
+
+col1, col2 = st.columns([6,1])
+
+with col1:
+    st.markdown("""
+    <div style="display:flex; align-items:center; height:180px;">
+        <h1 class="header-title">
+            NORSOK M-506 CO₂ Corrosion Calculator
+        </h1>
+    </div>
+    """, unsafe_allow_html=True)
+
+with col2:
+    st.image("logo_01.png", width=150)
+
+st.markdown("""
+<div style="
+border:1px solid #D9D9D9;
+border-radius:10px;
+padding:15px 20px;
+background-color:#FAFAFA;
+margin-top:10px;
+margin-bottom:25px;
+">
+
+<table style="width:100%;">
+<tr>
+<td style="width:180px;"><b>Source</b></td>
+<td>
+<a href="https://github.com/dungnguyen2/norsokm506">
+https://github.com/dungnguyen2/norsokm506
+</a>
+</td>
+</tr>
+
+<tr>
+<td><b>Developed by</b></td>
+<td>
+Ari SN & Gendro Wisnu
+(Drilling & Well D&P TEC - PHE)
+</td>
+</tr>
+
+<tr>
+<td><b>Last Update</b></td>
+<td>June 2026</td>
+</tr>
+
+</table>
+
+</div>
+""", unsafe_allow_html=True)
 
 st.header("Operating Conditions")
 
@@ -31,7 +100,13 @@ with col2:
         ["bar", "psi"],
         help="Operating pressure"
     )
+    
+if pressure_unit == "psi":
+    press_bar = press / 14.503774
+else:
+    press_bar = press
 
+press = press_bar
 
 co2fraction = st.number_input(
     "CO₂ Fraction",
@@ -119,13 +194,15 @@ dia = st.number_input(
     help="Pipe ID"
 )
 
-if pressure_unit == "psi":
-    press_bar = press / 14.503774
-else:
-    press_bar = press
-
 if st.button("Calculate Corrosion Rate"):
     
+    FugCO2 = ns.FugacityofCO2(
+    co2fraction,
+    press,
+    temp
+    )
+    
+    kt = ns.Kt(temp)
 
     ph = ns.pHCalculator(
         temp,
@@ -135,6 +212,8 @@ if st.button("Calculate Corrosion Rate"):
         ionstrength,
         2
     )
+
+    fph = ns.fpH_Cal(temp, float(ph))
 
     shearstress = ns.Shearstress(
         v_sg,
@@ -172,32 +251,108 @@ if st.button("Calculate Corrosion Rate"):
 
     st.success("Calculation completed")
 
-    st.subheader("Input Summary")
-    st.write(f"Temperature : {temp:.2f} °C")
-    
+
     if pressure_unit == "bar":
         pressure_psi = press * 14.503774
     else:
         pressure_psi = press
-    st.write(f"Pressure : {pressure_psi:.2f} psi")
-    
-    st.write(f"CO₂ Fraction : {co2fraction:.2f}")
-    
-    st.subheader("Calculated Parameters")
-    st.write(f"pH : {ph:.2f}")
 
-    st.subheader("Main Results")
+    col_input, col_calc = st.columns(2)
+    with col_input:
 
-    col1, col2 = st.columns(2)
+        st.subheader("📋 Input Summary")
 
+        st.markdown(f"""
+| Parameter | Value |
+|-----------|--------|
+| Temperature | {temp:.2f} °C |
+| Pressure | {pressure_psi:.2f} psi |
+| CO₂ Fraction | {co2fraction:.2f} |
+""")
+        
+    with col_calc:
+        st.subheader("🧮 Calculated Parameters")
+
+        st.markdown(f"""
+| Parameter | Value |
+|-----------|--------|
+| CO₂ Fugacity | {FugCO2:.2f} |
+| pH | {ph:.2f} |
+| f(pH) | {fph:.3f} |
+| Kt | {kt:.4f} |
+""")
+        
+
+    st.subheader("📈 Main Results")
+
+    col1, col2 = st.columns([1,1])
     with col1:
-        st.metric(
-            "Shear Stress",
-            f"{shearstress:.2f} Pa"
+        st.markdown(
+            f"""
+<div style="
+background-color:white;
+border:1px solid #DDDDDD;
+border-radius:12px;
+padding:20px;
+text-align:center;
+height:120px;
+display:flex;
+flex-direction:column;
+justify-content:center;
+">
+
+<div style="
+font-size:20px;
+font-weight:600;
+">
+Shear Stress
+</div>
+
+<div style="
+font-size:36px;
+font-weight:700;
+">
+{shearstress:.2f} Pa
+</div>
+
+</div>
+""",
+            unsafe_allow_html=True
         )
 
     with col2:
-        st.metric(
-            "Corrosion Rate",
-            f"{corr:.2f} mm/y"
+        st.markdown(
+            f"""
+<div style="
+background-color:#F4FAF4;
+border:2px solid #4CAF50;
+border-radius:12px;
+padding:20px;
+text-align:center;
+height:120px;
+display:flex;
+flex-direction:column;
+justify-content:center;
+">
+
+<div style="
+font-size:20px;
+font-weight:600;
+color:#2E7D32;
+margin-bottom:10px;
+">
+Corrosion Rate
+</div>
+
+<div style="
+font-size:36px;
+font-weight:700;
+color:#2E7D32;
+">
+{corr:.2f} mm/y
+</div>
+
+</div>
+""",
+            unsafe_allow_html=True
         )

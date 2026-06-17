@@ -1,4 +1,4 @@
-import norsokm506_01 as ns
+import norsokm506_main as ns
 
 v_sg=9
 v_sl=1
