@@ -5,10 +5,9 @@ Web-based calculator for predicting internal CO₂ corrosion rate using the NORS
 ## Overview
 
 This application calculates:
-
 - pH of produced water
-- Shear Stress
 - CO₂ Fugacity
+- Shear Stress
 - Internal Corrosion Rate (mm/y)
 
 based on operating conditions and flow parameters commonly used in oil & gas production systems.
@@ -55,11 +54,14 @@ The calculator is implemented in Python and provided through a Streamlit web int
 ## Outputs
 
 ### Calculated Parameters
-- pH
 - CO₂ Fugacity
-- Shear Stress
+- pH
+- fpH
+- Kt
+
 
 ### Main Results
+- Shear Stress (Pa)
 - Corrosion Rate (mm/y)
 
 ---
@@ -106,7 +108,7 @@ This version has been modified and extended by:
 Major enhancements include:
 - Streamlit web application
 - Improved user interface
-- Pressure unit selection (bar / psi)
+- Pressure unit selection
 - Input validation
 - Enhanced result presentation
 - Code maintenance and bug fixes

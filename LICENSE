@@ -34,7 +34,7 @@ Major modifications include:
 - Development of a Streamlit web application
 - Improved user interface and user experience
 - Additional input validation
-- Unit conversion (bar / psi)
+- Unit conversion
 - Enhanced result presentation
 - Bug fixes and code refactoring
 - Additional engineering calculation features
