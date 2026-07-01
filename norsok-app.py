@@ -91,24 +91,28 @@ temp = st.number_input(
 )
 
 col1, col2 = st.columns([3,1])
+
 with col1:
-    press = st.number_input(
+    press_input = st.number_input(
         "Pressure",
         value=37.6,
     )
+
 with col2:
     pressure_unit = st.selectbox(
         "",
         ["bar", "psi"],
         help="Operating pressure"
     )
-    
-if pressure_unit == "psi":
-    press_bar = press / 14.503774
-else:
-    press_bar = press
 
-press = press_bar
+# Convert pressure once
+if pressure_unit == "psi":
+    press_psi = press_input
+    press_bar = press_input / 14.503774
+else:
+    press_bar = press_input
+    press_psi = press_input * 14.503774
+
 
 co2fraction = st.number_input(
     "CO₂ Fraction",
@@ -203,7 +207,7 @@ if st.button("Calculate Corrosion Rate"):
     
     FugCO2 = ns.FugacityofCO2(
     co2fraction,
-    press,
+    press_bar,
     temp
     )
     
@@ -211,8 +215,8 @@ if st.button("Calculate Corrosion Rate"):
 
     ph = ns.pHCalculator(
         temp,
-        press,
-        co2fraction * press,
+        press_bar,
+        co2fraction * press_bar,
         bicarbonate,
         ionstrength,
         2
@@ -236,7 +240,7 @@ if st.button("Calculate Corrosion Rate"):
 
     corr = ns.Cal_Norsok(
         co2fraction,
-        press,
+        press_bar,
         temp,
         v_sg,
         v_sl,
@@ -256,11 +260,9 @@ if st.button("Calculate Corrosion Rate"):
 
     st.success("Calculation completed")
 
-#Unit conversion for Pressure
-    if pressure_unit == "bar":
-        press = press
-    else:
-        press = press / 14.503774
+    pressure_display = (
+        f"{press_psi:.2f} psi ({press_bar:.2f} bar)"
+        )
 
 #Ouput: Input Summary
     col_input, col_calc = st.columns(2)
@@ -272,7 +274,7 @@ if st.button("Calculate Corrosion Rate"):
 | Parameter | Value |
 |-----------|--------|
 | Temperature | {temp:.2f} °C |
-| Pressure | {press:.2f} psi |
+| Pressure | {pressure_display} |
 | CO₂ Fraction | {co2fraction:.2f} |
 """)
 
